@@ -4,11 +4,11 @@ venv/
 __pycache__/
 
 instance/
-
+migrations/
 .pytest_cache/
 .coverage
 htmlcov/
-
+.env
 dist/
 build/
 *.egg-info/
