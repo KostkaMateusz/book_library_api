@@ -1,6 +1,6 @@
 from book_library_app import app
 from book_library_app import db
-from book_library_app.models import Authors
+from book_library_app.models import Author
 import json
 from pathlib import Path
 from datetime import datetime
@@ -26,7 +26,7 @@ def add_data():
             # in sample data there date is in dd-mm-yyyy 
             item['birth_date']=datetime.strptime(item['birth_date'],'%d-%m-%Y').date()
             #to create instance of a Author from key world argument
-            author=Authors(**item)
+            author=Author(**item)
             db.session.add(author)
         db.session.commit()
         print('Data has been sucessfully added to database')
@@ -39,7 +39,7 @@ def remove_data():
     """Remove all data from database"""
     try:
         #SQL comant to deleta date from db 
-        db.session.execute('TRUNCATE TABLE authors')
+        db.session.execute('TRUNCATE TABLE authors RESTART IDENTITY')
         print('Data has been sucessfully removed from database')
         db.session.commit()
     except Exception as exc:
