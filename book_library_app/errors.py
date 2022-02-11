@@ -2,6 +2,8 @@ from book_library_app import app,db
 from flask import Response, jsonify
 
 class ErrorResponse:
+    """custom class that takes usefull infomration from error handling function
+    and convert them to json and send this json as response for a call"""
     def __init__(self,message:str,http_status:int):
         self.payload={
             'success':False,
@@ -14,7 +16,7 @@ class ErrorResponse:
         response.status_code=self.http_status
         return response
 
-
+#Error code handling function, flask generic exception handlers
 @app.errorhandler(404)
 def not_found_error(err):
     return ErrorResponse(err.description,404).to_response()
@@ -31,6 +33,7 @@ def unsupported_media_type_error(err):
     return ErrorResponse(err.description,415).to_response()
 
 @app.errorhandler(500)
-def internal_server_error_error(err):
+def internal_server_error(err):
+    #in case of error 500 internal server error we may need reset connection with database
     db.session.rollback()
     return ErrorResponse(err.description,500).to_response()
