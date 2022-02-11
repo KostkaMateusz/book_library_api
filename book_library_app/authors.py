@@ -1,7 +1,7 @@
 from flask import jsonify,request
-from book_library_app import app
+from book_library_app import app,db
 from book_library_app.models import Author , AuthorSchema, author_schema
-
+from webargs.flaskparser import use_args
 
 @app.route('/api/v1/authors', methods=['GET'])
 def get_authors():
@@ -18,7 +18,6 @@ def get_authors():
 @app.route('/api/v1/authors/<int:author_id>', methods=['GET'])
 def get_author(author_id: int):
     authors=Author.query.get_or_404(author_id,description=f'Author with id: {author_id} not found')
-    
     return jsonify({
         'success': True,
         'data': author_schema.dump(authors)
@@ -26,16 +25,15 @@ def get_author(author_id: int):
 
 
 @app.route('/api/v1/authors', methods=['POST'])
-def create_author():
-    data=request.get_json()
-    first_name=data.get('first_name')
-    last_name=data.get('last_name')
-    birth_date=data.get('birth_date')
-    author=Author(first_name=first_name,last_name=last_name,birth_date=birth_date)
-    print(author)
+@use_args(author_schema)
+def create_author(kwargs:dict):
+    author=Author(**kwargs)
+    db.session.add(author)
+    db.session.commit()
+    
     return jsonify({
         'success': True,
-        'data': 'New author has been created'
+        'data': author_schema.dump(author)
     }), 201
 
 
