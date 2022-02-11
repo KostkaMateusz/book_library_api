@@ -42,15 +42,30 @@ def create_author(kwargs: dict):
 
 
 @app.route('/api/v1/authors/<int:author_id>', methods=['PUT'])
-def update_author(author_id: int):
+@validate_json_content_type
+@use_args(author_schema,error_status_code=400)
+def update_author(kwargs:dict , author_id: int):
+    authors = Author.query.get_or_404(
+        author_id, description=f'Author with id: {author_id} not found')
+    authors.first_name=kwargs['first_name']
+    authors.last_name=kwargs['last_name']
+    authors.birth_date=kwargs['birth_date']
+    
+    db.session.commit()
+
     return jsonify({
         'success': True,
-        'data': f'Author with id: {author_id} has been updated'
+        'data': author_schema.dump(authors)
     })
 
 
 @app.route('/api/v1/authors/<int:author_id>', methods=['DELETE'])
 def delete_author(author_id: int):
+    authors = Author.query.get_or_404(
+        author_id, description=f'Author with id: {author_id} not found')
+    db.session.delete(authors)
+    db.session.commit()
+
     return jsonify({
         'success': True,
         'data': f'Author with {author_id} has been deleted'

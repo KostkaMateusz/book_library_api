@@ -4,9 +4,9 @@ from functools import wraps
 
 def validate_json_content_type(func):
     @wraps(func)
-    def wrapper(*args,**keargs):
+    def wrapper(*args,**kwargs):
         data=request.get_json()
         if data is None:
             raise   UnsupportedMediaType('Content type must be appliacation/json')
-        return finc(*args,**kwargs)
+        return func(*args,**kwargs)
     return wrapper
