@@ -10,8 +10,14 @@ from webargs.flaskparser import use_args
 @app.route('/api/v1/authors', methods=['GET'])
 def get_authors():
     """Querry table Authors and returns data as json"""
-    authors = Author.query.all()
-    author_schema = AuthorSchema(many=True)
+    query = Author.query
+    query = Author.apply_order(query, request.args.get('sort'))
+    query = Author.apply_filter(query, request.args)
+    # here we dynamicly build arguments to a function in form of dict
+    # and later we konwert dic with ** notation to key_word arguments
+    schema_args = Author.get_schema_args(request.args.get('fields'))
+    authors = query.all()
+    author_schema = AuthorSchema(**schema_args)
 
     return jsonify({
         'success': True,
@@ -54,7 +60,7 @@ def create_author(kwargs: dict):
 def update_author(kwargs: dict, author_id: int):
     authors = Author.query.get_or_404(
         author_id, description=f'Author with id: {author_id} not found')
-    #change data in object fields and then commit them
+    # change data in object fields and then commit them
     authors.first_name = kwargs['first_name']
     authors.last_name = kwargs['last_name']
     authors.birth_date = kwargs['birth_date']
