@@ -11,7 +11,7 @@ from webargs.flaskparser import use_args
 def get_authors():
     """Querry table Authors and returns data as json"""
     query = Author.query
-    query = Author.apply_order(query, request.args.get('sort'))
+    query = Author.apply_order(query)
     query = Author.apply_filter(query)
     items,pagination=Author.get_pagination(query)
     # here we dynamicly build arguments to a function in form of dict

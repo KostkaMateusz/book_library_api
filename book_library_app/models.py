@@ -33,7 +33,8 @@ class Author(db.Model):
         return schema_args
 
     @staticmethod
-    def apply_order(querry: BaseQuery, sort_keys: str) -> BaseQuery:
+    def apply_order(querry: BaseQuery) -> BaseQuery:
+        sort_keys= request.args.get('sort')
         if sort_keys:
             for key in sort_keys.split(','):
                 desc = False
@@ -78,7 +79,7 @@ class Author(db.Model):
         return query
 
     @staticmethod
-    def get_pagination(querry:BaseQuery)->Tuple(list,dict):
+    def get_pagination(querry:BaseQuery)->Tuple:
         page=request.args.get('page',1,type=int)
         limit=request.args.get('limit',Config.PER_PAGE,type=int)
         params={key:value for key,value in request.args.items() if key!='page'}
@@ -92,7 +93,7 @@ class Author(db.Model):
             pagination['next_page']=url_for('get_authors',page=page+1,**params)
         
         if paginate_object.has_prev:
-            pagination['previous_page']=url_for('get_authors',page=page-1,**params)
+            pagination['previous_page']=url_for('get_authors',page=page-1)
 
         return paginate_object.items, pagination
 
