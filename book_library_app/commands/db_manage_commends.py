@@ -1,13 +1,12 @@
-from book_library_app import app
 from book_library_app import db
 from book_library_app.models import Author
 import json
 from pathlib import Path
 from datetime import datetime
-
+from book_library_app.commands import db_manage_bp
 
 #flask cli group 
-@app.cli.group()
+@db_manage_bp.cli.group()
 def db_manage():
     """Database managment commends"""
     pass
@@ -19,7 +18,7 @@ def add_data():
     """Add sample data to database"""
     #connecting with db in case something went wrong with connection
     try:
-        authors_path=Path(__file__).parent/'samples'/'authors.json'
+        authors_path=Path(__file__).parent.parent/'samples'/'authors.json'
         with open(authors_path) as file:
             data_json=json.load(file)
         for item in data_json:

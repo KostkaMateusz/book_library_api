@@ -1,13 +1,13 @@
 from flask import jsonify, request
-from book_library_app import app, db
+from book_library_app import db
 from book_library_app.utils import validate_json_content_type
 from book_library_app.models import Author, AuthorSchema, author_schema
 from webargs.flaskparser import use_args
-
+from book_library_app.authors import authors_bp
 # request handling functions
 
 
-@app.route('/api/v1/authors', methods=['GET'])
+@authors_bp.route('/authors', methods=['GET'])
 def get_authors():
     """Querry table Authors and returns data as json"""
     query = Author.query
@@ -28,7 +28,7 @@ def get_authors():
     })
 
 
-@app.route('/api/v1/authors/<int:author_id>', methods=['GET'])
+@authors_bp.route('/authors/<int:author_id>', methods=['GET'])
 def get_author(author_id: int):
     """Querry DB in for a specyfic id if not found returns 404 error 
 which is handled"""
@@ -40,7 +40,7 @@ which is handled"""
     })
 
 
-@app.route('/api/v1/authors', methods=['POST'])
+@authors_bp.route('/authors', methods=['POST'])
 @validate_json_content_type
 @use_args(author_schema, error_status_code=400)
 def create_author(kwargs: dict):
@@ -56,7 +56,7 @@ def create_author(kwargs: dict):
     }), 201
 
 
-@app.route('/api/v1/authors/<int:author_id>', methods=['PUT'])
+@authors_bp.route('/authors/<int:author_id>', methods=['PUT'])
 @validate_json_content_type
 @use_args(author_schema, error_status_code=400)
 def update_author(kwargs: dict, author_id: int):
@@ -75,7 +75,7 @@ def update_author(kwargs: dict, author_id: int):
     })
 
 
-@app.route('/api/v1/authors/<int:author_id>', methods=['DELETE'])
+@authors_bp.route('/authors/<int:author_id>', methods=['DELETE'])
 def delete_author(author_id: int):
     authors = Author.query.get_or_404(
         author_id, description=f'Author with id: {author_id} not found')
