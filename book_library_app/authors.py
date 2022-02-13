@@ -12,17 +12,19 @@ def get_authors():
     """Querry table Authors and returns data as json"""
     query = Author.query
     query = Author.apply_order(query, request.args.get('sort'))
-    query = Author.apply_filter(query, request.args)
+    query = Author.apply_filter(query)
+    items,pagination=Author.get_pagination(query)
     # here we dynamicly build arguments to a function in form of dict
     # and later we konwert dic with ** notation to key_word arguments
     schema_args = Author.get_schema_args(request.args.get('fields'))
-    authors = query.all()
-    author_schema = AuthorSchema(**schema_args)
+    
+    authors = AuthorSchema(**schema_args).dump(items)
 
     return jsonify({
         'success': True,
-        'data': author_schema.dump(authors),
-        'numbers_of_records': len(authors)
+        'data': authors,
+        'numbers_of_records': len(authors),
+        'pagination':pagination
     })
 
 
