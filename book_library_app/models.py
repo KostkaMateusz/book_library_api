@@ -68,7 +68,6 @@ class BookSchema(Schema):
     title = fields.String(required=True, validate=validate.Length(max=50))
     isbn = fields.Integer(required=True)
     number_of_pages = fields.Integer(required=True)
-    birth_date = fields.Date('%d-%m-%Y', required=True)
     description = fields.String()
     author_id = fields.Integer(load_only=True)
     author = fields.Nested(lambda: AuthorSchema(
@@ -77,6 +76,7 @@ class BookSchema(Schema):
     @validates('isbn')
     def validate_isbn(self, number):
         if len(str(number)) != 13:
+            print("w bledzie ")
             raise ValidationError('ISBN number must have 13 digits')
 
 
