@@ -25,10 +25,12 @@ def create_app(config_class=Config):
     from book_library_app.errors import errors_bp
     # authors is responsible to connect logigc and www
     from book_library_app.authors import authors_bp
+    from book_library_app.books import books_bp
 
     app.register_blueprint(db_manage_bp)
     app.register_blueprint(errors_bp)
     app.register_blueprint(authors_bp, url_prefix='/api/v1')
+    app.register_blueprint(books_bp, url_prefix='/api/v1')
 
     return app
 
