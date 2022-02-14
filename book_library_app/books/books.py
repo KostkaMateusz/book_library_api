@@ -98,7 +98,7 @@ def get_all_author_books(author_id:int):
         'number_of_records':len(items)
     })
 
-@books_bp.route('authors/<int:author_id>/books',methods=['POST'])
+@books_bp.route('/authors/<int:author_id>/books',methods=['POST'])
 @validate_json_content_type
 @use_args(BookSchema(exclude=['author_id']),error_status_code=400)
 def create_book(args:dict,author_id:int):
