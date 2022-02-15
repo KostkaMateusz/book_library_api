@@ -7,6 +7,9 @@ from werkzeug.exceptions import UnsupportedMediaType
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.expression import BinaryExpression
 from book_library_app.debug import debug
+from flask import abort
+import jwt
+
 COMPARISION_OPERATORS_RE = re.compile(r'(.*)\[(gte|gt|lte|lt)\]')
 
 
@@ -19,6 +22,29 @@ def validate_json_content_type(func):
             raise UnsupportedMediaType(
                 'Content type must be appliacation/json')
         return func(*args, **kwargs)
+    return wrapper
+
+
+@debug
+def token_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        token = None
+        auth = request.headers.get('Authorization')
+        if auth:
+            token = auth.split(' ')[1]
+        if token is None:
+            abort(401, description='Missing token. Please login or register')
+
+        try:
+            payload = jwt.decode(token, current_app.config.get(
+                'SECRET_KEY'), algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            abort(401, description='Token expired. Please login to get new token')
+        except jwt.InvalidTokenError:
+            abort(401, description='Invalid token. Please login or register')
+        else:
+            return func(payload['user_id'], *args, **kwargs)
     return wrapper
 
 

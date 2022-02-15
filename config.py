@@ -22,3 +22,4 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # variable with number of records in site using pagination
     PER_PAGE = 5
+    JWT_EXPIRED_MINUTES=30
