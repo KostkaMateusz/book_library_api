@@ -5,7 +5,7 @@ from book_library_app.models import Author, AuthorSchema, author_schema
 from webargs.flaskparser import use_args
 from book_library_app.authors import authors_bp
 from book_library_app.utils import get_schema_args, apply_order, apply_filter, get_pagination
-# request handling functions
+from book_library_app.debug import debug
 
 
 @authors_bp.route('/authors', methods=['GET'])
@@ -16,8 +16,6 @@ def get_authors():
     query = apply_order(Author, query)
     query = apply_filter(Author, query)
     items, pagination = get_pagination(query, 'authors.get_authors')
-    # here we dynamicly build arguments to a function in form of dict
-    # and later we konwert dic with ** notation to key_word arguments
 
     authors = AuthorSchema(**schema_args).dump(items)
 

@@ -33,5 +33,3 @@ def create_app(config_class=Config):
     app.register_blueprint(books_bp, url_prefix='/api/v1')
 
     return app
-
-
