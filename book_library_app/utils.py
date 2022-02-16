@@ -34,15 +34,15 @@ def token_required(func):
         if auth:
             token = auth.split(' ')[1]
         if token is None:
-            abort(401, description='Missing token. Please login or register')
+            abort(404, description='Missing token. Please login or register')
 
         try:
             payload = jwt.decode(token, current_app.config.get(
                 'SECRET_KEY'), algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
-            abort(401, description='Token expired. Please login to get new token')
+            abort(404, description='Token expired. Please login to get new token')
         except jwt.InvalidTokenError:
-            abort(401, description='Invalid token. Please login or register')
+            abort(404, description='Invalid token. Please login or register')
         else:
             return func(payload['user_id'], *args, **kwargs)
     return wrapper
@@ -135,6 +135,6 @@ def get_pagination(querry: BaseQuery, func_name: str) -> Tuple:
 
     if paginate_object.has_prev:
         pagination['previous_page'] = url_for(
-            func_name, page=page-1)
+            func_name, page=page-1,**params)
 
     return paginate_object.items, pagination
