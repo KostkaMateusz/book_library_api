@@ -215,8 +215,9 @@ def test_get_authors_with_params(client,sample_data):
         }
 
 
-def test_get_single_authors(client):
-    response = client.get('api/v1/authors/9')
+def test_get_single_authors(client,sample_data):
+
+    response = client.get('/api/v1/authors/9')
     response_data=response.get_json()
 
     assert response.status_code==200
@@ -266,3 +267,39 @@ def test_create_single_authors(client,token,author):
     assert response.status_code==200
     assert response.headers['Content-Type']=='application/json'
     assert response_data==expected_result
+
+@pytest.mark.parametrize(
+    'data,missing_field',
+    [
+        ({'last_name': 'Mickiewwicz', 'birth_date': '24-12-1798'}, 'first_name'),
+        ({'first_name': 'Mickiewwicz', 'birth_date': '24-12-1798'}, 'last_name'),
+        ({'last_name': 'Mickiewwicz', 'first_name': 'Mickiewwicz'}, 'birth_date'),
+        
+    ]
+)
+
+def test_add_author_invalid_data(client, token,data, missing_field):
+    response = client.post('/api/v1/authors', json=data,headers={'Authorization': f'Bearer {token}'})
+
+    response_data = response.get_json()
+    assert response.status_code == 400
+    assert response.headers['Content-Type'] == 'application/json'
+    assert response_data['success'] is False
+    assert 'data' not in response_data
+
+
+def test_add_author_invalid_content_type(client, token, author):
+    response = client.post('/api/v1/authors', data=author,headers={'Authorization': f'Bearer {token}'})
+
+    response_data = response.get_json()
+    assert response.status_code == 415
+    assert response.headers['Content-Type'] == 'application/json'
+
+def test_add_author_missing_token(client,author):
+    response = client.post('/api/v1/authors', json=author)
+
+    response_data = response.get_json()
+    assert response.status_code == 404
+    assert response.headers['Content-Type'] == 'application/json'
+    assert response_data['success'] is False
+    assert 'data' not in response_data
