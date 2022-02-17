@@ -1,14 +1,9 @@
-from datetime import date, datetime ,timedelta
-
+from datetime import date, datetime, timedelta
 from book_library_app.debug import debug
-
-from operator import index
 import jwt
 from flask import current_app
-
 from marshmallow import Schema, ValidationError, fields, validate, validates
-from werkzeug.security import generate_password_hash ,check_password_hash
-
+from werkzeug.security import generate_password_hash, check_password_hash
 from book_library_app import db
 
 # models is responsible for creating and manage data model in db
@@ -25,6 +20,8 @@ class Author(db.Model):
     books = db.relationship(
         'Book', back_populates='author', cascade="all, delete-orphan")
 
+    author_average_score = db.Column(db.Float, nullable=True)
+
     def __repr__(self) -> str:
         return f'<{self.__class__.__name__}>: {self.first_name}{self.last_name}'
 
@@ -38,6 +35,22 @@ class Author(db.Model):
         return value
 
 
+class AuthorSchema(Schema):
+    id = fields.Integer(dump_only=True)
+    first_name = fields.String(required=True, validate=validate.Length(max=50))
+    last_name = fields.String(required=True, validate=validate.Length(max=50))
+    birth_date = fields.Date('%d-%m-%Y', required=True)
+    books = fields.List(fields.Nested(lambda: BookSchema(exclude=['author'])))
+
+    author_average_score = fields.Float()
+
+    @validates('birth_date')
+    def validate_birth_date(self, value):
+        if value > datetime.now().date():
+            raise ValidationError(
+                f'Birth date must be lower than {datetime.now().date()}')
+
+
 class Book(db.Model):
     __tablename__ = 'books'
     id = db.Column(db.Integer, primary_key=True)
@@ -49,26 +62,18 @@ class Book(db.Model):
         'authors.id'), nullable=False)
     author = db.relationship('Author', back_populates='books')
 
+    number_of_votes = db.Column(db.Integer, nullable=True)
+    score_sum = db.Column(db.Integer, nullable=True)
+    average_book_score = db.Column(db.Float, nullable=True)
+
+    comment = db.relationship('Votes', back_populates='book')
+
     def __repr__(self):
         return f'{self.title}-{self.author.first_name} {self.author.last_name} '
 
     @staticmethod
     def additional_validation(param: str, value: str) -> str:
         return value
-
-
-class AuthorSchema(Schema):
-    id = fields.Integer(dump_only=True)
-    first_name = fields.String(required=True, validate=validate.Length(max=50))
-    last_name = fields.String(required=True, validate=validate.Length(max=50))
-    birth_date = fields.Date('%d-%m-%Y', required=True)
-    books = fields.List(fields.Nested(lambda: BookSchema(exclude=['author'])))
-
-    @validates('birth_date')
-    def validate_birth_date(self, value):
-        if value > datetime.now().date():
-            raise ValidationError(
-                f'Birth date must be lower than {datetime.now().date()}')
 
 
 class BookSchema(Schema):
@@ -81,6 +86,13 @@ class BookSchema(Schema):
     author = fields.Nested(lambda: AuthorSchema(
         only=['id', 'first_name', 'last_name']))
 
+    number_of_votes = fields.Integer()
+    score_sum = fields.Integer()
+    average_book_score = fields.Float()
+
+    comment = fields.Nested(lambda: VotesSchema(
+        only=['comment_id', 'points', 'comment_text']))
+
     @validates('isbn')
     def validate_isbn(self, number):
         if len(str(number)) != 13:
@@ -88,46 +100,74 @@ class BookSchema(Schema):
             raise ValidationError('ISBN number must have 13 digits')
 
 
+class Votes(db.Model):
+    __tablename__ = 'votes'
+    comment_id = db.Column(db.Integer, primary_key=True)
+    points = db.Column(db.Integer)
+    comment_text = db.Column(db.String(255))
+    book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
+    book = db.relationship('Book', back_populates='comment')
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship('User', back_populates='comment')
+
+
+class VotesSchema(Schema):
+    comment_id = fields.Integer(dump_only=True)
+    points = fields.Integer(validate=validate.Length(min=1, max=5))
+    comment_text = fields.String(validate=validate.Length(max=255))
+    book_id = fields.Integer()
+    book = fields.Nested(lambda: BookSchema(only=['id']))
+    user_id = fields.Integer()
+    user = fields.Nested(lambda: UserSchema(only=['id']))
+
+
 class User(db.Model):
-    __tablename__='users'
-    id=db.Column(db.Integer,primary_key=True)
-    username=db.Column(db.String(255),nullable=False,unique=True,index=True)
-    email=db.Column(db.String(255),nullable=False,unique=True)
-    password=db.Column(db.String(255),nullable=False)
-    creation_date=db.Column(db.DateTime,default=datetime.utcnow)
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(255), nullable=False,
+                         unique=True, index=True)
+    email = db.Column(db.String(255), nullable=False, unique=True)
+    password = db.Column(db.String(255), nullable=False)
+    creation_date = db.Column(db.DateTime, default=datetime.utcnow)
+
+    comment = db.relationship('Votes', back_populates='user')
 
     @staticmethod
-    def generate_hashed_password(password:str)->str:
+    def generate_hashed_password(password: str) -> str:
         return generate_password_hash(password)
-    
-    
+
     @debug
-    def is_password_valid(self,password:str)->bool:
-        return check_password_hash(self.password,password)
+    def is_password_valid(self, password: str) -> bool:
+        return check_password_hash(self.password, password)
 
     @debug
     def generate_jwt(self):
-        payload={
-            'user_id':self.id,
-            'exp':datetime.utcnow()+timedelta(minutes=current_app.config.get('JWT_EXPIRED_MINUTES',30))
+        payload = {
+            'user_id': self.id,
+            'exp': datetime.utcnow()+timedelta(minutes=current_app.config.get('JWT_EXPIRED_MINUTES', 30))
         }
 
-        return jwt.encode(payload,current_app.config.get('SECRET_KEY'))
-    
+        return jwt.encode(payload, current_app.config.get('SECRET_KEY'))
+
 
 class UserSchema(Schema):
-    id=fields.Integer(dumb_only=True)
-    username=fields.String(required=True,validate=validate.Length(max=255))
-    email=fields.Email(required=True)
-    password=fields.String(required=True,load_only=True,validate=validate.Length(min=6,max=255))
-    creation_date=fields.DateTime(dump_only=True)
+    id = fields.Integer(dumb_only=True)
+    username = fields.String(required=True, validate=validate.Length(max=255))
+    email = fields.Email(required=True)
+    password = fields.String(
+        required=True, load_only=True, validate=validate.Length(min=6, max=255))
+    creation_date = fields.DateTime(dump_only=True)
+
 
 class UserPasswordUpdateSchema(Schema):
-    current_password=fields.String(required=True,load_only=True,validate=validate.Length(min=6,max=255))
-    new_password=fields.String(required=True,load_only=True,validate=validate.Length(min=6,max=255))
+    current_password = fields.String(
+        required=True, load_only=True, validate=validate.Length(min=6, max=255))
+    new_password = fields.String(
+        required=True, load_only=True, validate=validate.Length(min=6, max=255))
 
 
 author_schema = AuthorSchema()
 book_schema = BookSchema()
-user_schema=UserSchema()
-user_password_update_schema=UserPasswordUpdateSchema()
+user_schema = UserSchema()
+user_password_update_schema = UserPasswordUpdateSchema()
+votes_schema = VotesSchema()
