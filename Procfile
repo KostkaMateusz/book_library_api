@@ -1,1 +1,1 @@
-web: gunicorn book_library_app:appweb: book_library:app
+web: gunicorn book_library:app
