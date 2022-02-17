@@ -40,3 +40,6 @@ config={
     'testing':TestingConfig
 }
     
+class ProductionConfig(Config):
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    
