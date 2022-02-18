@@ -25,7 +25,7 @@ def validate_json_content_type(func):
     return wrapper
 
 
-@debug
+
 def token_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -113,7 +113,7 @@ def apply_filter(model: DefaultMeta, query: BaseQuery) -> BaseQuery:
                 query = query.filter(filter_argument)
     return query
 
-
+@debug
 def get_pagination(querry: BaseQuery, func_name: str) -> Tuple:
     """Return divided data to pages with adres for next and previous page"""
     page = request.args.get('page', 1, type=int)
@@ -135,6 +135,6 @@ def get_pagination(querry: BaseQuery, func_name: str) -> Tuple:
 
     if paginate_object.has_prev:
         pagination['previous_page'] = url_for(
-            func_name, page=page-1,**params)
+            func_name, page=page-1, **params)
 
     return paginate_object.items, pagination

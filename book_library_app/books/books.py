@@ -1,11 +1,12 @@
 from flask import jsonify, abort
 from book_library_app import db
 from book_library_app.utils import validate_json_content_type
-from book_library_app.models import Book, BookSchema, book_schema, Author
+from book_library_app.models import Book, BookSchema, book_schema, Author ,Votes,votes_schema
 from webargs.flaskparser import use_args
 from book_library_app.books import books_bp
+from book_library_app.votes import votes_bp
 from book_library_app.utils import get_schema_args, apply_order, apply_filter, get_pagination, token_required
-
+from sqlalchemy.sql import functions
 
 @books_bp.route('/books', methods=['GET'])
 def get_books():
@@ -14,6 +15,8 @@ def get_books():
     query = apply_order(Book, query)
     query = apply_filter(Book, query)
     items, pagination = get_pagination(query, 'books.get_books')
+
+
 
     # specify what fields are to be serialized Schema(only=[fields])
     schema_args = get_schema_args(Book)
@@ -31,11 +34,13 @@ def get_books():
 def get_book(book_id: int):
     """Querry DB in for a specyfic id if not found returns 404 error 
 which is handled"""
-    books = Book.query.get_or_404(
+    book = Book.query.get_or_404(
         book_id, description=f'Author with id: {book_id} not found')
+    
     return jsonify({
         'success': True,
-        'data': book_schema.dump(books)
+        'data': book_schema.dump(book),
+        
     })
 
 
