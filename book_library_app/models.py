@@ -66,7 +66,7 @@ class Book(db.Model):
     score_sum = db.Column(db.Integer, nullable=True)
     average_book_score = db.Column(db.Float, nullable=True)
 
-    comment = db.relationship('Votes', back_populates='book')
+    comment = db.relationship('Votes')
 
     def __repr__(self):
         return f'{self.title}-{self.author.first_name} {self.author.last_name} '
@@ -90,13 +90,12 @@ class BookSchema(Schema):
     score_sum = fields.Integer()
     average_book_score = fields.Float()
 
-    comment = fields.Nested(lambda: VotesSchema(
-        only=['comment_id', 'points', 'comment_text']))
+    # comment = fields.Nested(lambda: VotesSchema(
+    #     only=['comment_id', 'points', 'comment_text']))
 
     @validates('isbn')
     def validate_isbn(self, number):
         if len(str(number)) != 13:
-            print("w bledzie ")
             raise ValidationError('ISBN number must have 13 digits')
 
 
@@ -106,19 +105,20 @@ class Votes(db.Model):
     points = db.Column(db.Integer)
     comment_text = db.Column(db.String(255))
     book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
-    book = db.relationship('Book', back_populates='comment')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user = db.relationship('User', back_populates='comment')
 
 
 class VotesSchema(Schema):
     comment_id = fields.Integer(dump_only=True)
-    points = fields.Integer(validate=validate.Length(min=1, max=5))
+    points = fields.Integer()
     comment_text = fields.String(validate=validate.Length(max=255))
     book_id = fields.Integer()
-    book = fields.Nested(lambda: BookSchema(only=['id']))
     user_id = fields.Integer()
-    user = fields.Nested(lambda: UserSchema(only=['id']))
+
+    @validates('points')
+    def validate_points(self,points):
+        if points<0 or points>5:
+            raise ValidationError('points number must be between 1 and 5')
 
 
 class User(db.Model):
@@ -130,7 +130,7 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     creation_date = db.Column(db.DateTime, default=datetime.utcnow)
 
-    comment = db.relationship('Votes', back_populates='user')
+    comment = db.relationship('Votes')
 
     @staticmethod
     def generate_hashed_password(password: str) -> str:

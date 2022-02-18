@@ -5,7 +5,7 @@ from book_library_app.models import Book, BookSchema, book_schema, Author ,Votes
 from webargs.flaskparser import use_args
 from book_library_app.books import books_bp
 from book_library_app.votes import votes_bp
-from book_library_app.utils import get_schema_args, apply_order, apply_filter, get_pagination, token_required
+from book_library_app.utils import calculate_stats,get_schema_args, apply_order, apply_filter, get_pagination, token_required
 from sqlalchemy.sql import functions
 
 @books_bp.route('/books', methods=['GET'])
@@ -35,8 +35,11 @@ def get_book(book_id: int):
     """Querry DB in for a specyfic id if not found returns 404 error 
 which is handled"""
     book = Book.query.get_or_404(
-        book_id, description=f'Author with id: {book_id} not found')
+        book_id, description=f'Book with id: {book_id} not found')
     
+    calculate_stats([1,2,3,4,5])
+    
+
     return jsonify({
         'success': True,
         'data': book_schema.dump(book),
