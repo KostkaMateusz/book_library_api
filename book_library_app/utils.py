@@ -9,11 +9,11 @@ from sqlalchemy.sql.expression import BinaryExpression
 from book_library_app.debug import debug
 from flask import abort
 import jwt
-from book_library_app.models import Votes, VotesSchema ,votes_schema , book_schema , Book, BookSchema
+from book_library_app.models import Votes, Book
 from book_library_app import db
 COMPARISION_OPERATORS_RE = re.compile(r'(.*)\[(gte|gt|lte|lt)\]')
 
-#remake to take second argument object[book or author]
+
 def calculate_stats(books_id: list[int])->None:
     """Calculate book score and number of votes based on book id and data in Votes table"""
     for book_id in books_id:

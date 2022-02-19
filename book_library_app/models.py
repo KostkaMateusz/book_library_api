@@ -62,9 +62,9 @@ class Book(db.Model):
         'authors.id'), nullable=False)
     author = db.relationship('Author', back_populates='books')
 
-    number_of_votes = db.Column(db.Integer, nullable=True)
-    score_sum = db.Column(db.Integer, nullable=True)
-    average_book_score = db.Column(db.Float, nullable=True)
+    number_of_votes = db.Column(db.Integer, nullable=True,default=0)
+    score_sum = db.Column(db.Integer, nullable=True,default=0)
+    average_book_score = db.Column(db.Float, nullable=True,default=0)
 
     comment = db.relationship('Votes')
 
@@ -107,6 +107,10 @@ class Votes(db.Model):
     book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
+
+    @staticmethod
+    def additional_validation(param: str, value: str) -> str:
+        return value
 
 class VotesSchema(Schema):
     comment_id = fields.Integer(dump_only=True)
