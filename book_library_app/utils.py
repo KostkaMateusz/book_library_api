@@ -9,23 +9,44 @@ from sqlalchemy.sql.expression import BinaryExpression
 from book_library_app.debug import debug
 from flask import abort
 import jwt
-from book_library_app.models import Votes, Book
+from book_library_app.models import Author, Votes, Book
 from book_library_app import db
 COMPARISION_OPERATORS_RE = re.compile(r'(.*)\[(gte|gt|lte|lt)\]')
 
 
-def calculate_stats(books_id: list[int])->None:
+def calculate_stats(books_id: list[int]) -> None:
     """Calculate book score and number of votes based on book id and data in Votes table"""
     for book_id in books_id:
-        votes_list=Votes.query.filter(Votes.book_id == book_id).all()
-        book=Book.query.get_or_404(book_id, description=f'Book with id: {book_id} not found')
-        book.score_sum=sum([vote.points for vote in votes_list])
-        book.number_of_votes=len(votes_list)
-        if book.number_of_votes !=0:
-            book.average_book_score=book.score_sum/book.number_of_votes
+        votes_list = Votes.query.filter(Votes.book_id == book_id).all()
+        book = Book.query.get_or_404(
+            book_id, description=f'Book with id: {book_id} not found')
+        book.score_sum = sum([vote.points for vote in votes_list])
+        book.number_of_votes = len(votes_list)
+        if book.number_of_votes != 0:
+            book.average_book_score = book.score_sum/book.number_of_votes
         else:
-            book.average_book_score=0
+            book.average_book_score = 0
+
         db.session.commit()
+        calculate_authors_stats(author_id=book.author_id)
+
+
+def calculate_authors_stats(author_id: int, db_save=True):
+    """Calculate author score if db_save is set to false db save is turned off"""
+    author = Author.query.get_or_404(
+        author_id, description=f'Author with id: {author_id} not found')
+    books = Book.query.filter(Book.author_id == author_id).all()
+    print(f'books:{books}')
+    sum_average_scores_book = 0
+    for book in books:
+        if book.average_book_score is not None:
+            sum_average_scores_book += book.average_book_score
+    number_of_author_books = len(books)
+    author.author_average_score = sum_average_scores_book / \
+        number_of_author_books if number_of_author_books != 0 else 0
+    if db_save is True:
+        db.session.commit()
+
 
 def validate_json_content_type(func):
     """Custom decorator check if send data from request is in json data format"""
@@ -37,7 +58,6 @@ def validate_json_content_type(func):
                 'Content type must be appliacation/json')
         return func(*args, **kwargs)
     return wrapper
-
 
 
 def token_required(func):
