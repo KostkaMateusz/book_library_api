@@ -1,5 +1,5 @@
 from datetime import date, datetime, timedelta
-from book_library_app.debug import debug
+from sqlalchemy import ForeignKey
 import jwt
 from flask import current_app
 from marshmallow import Schema, ValidationError, fields, validate, validates
@@ -8,8 +8,6 @@ from book_library_app import db
 
 # models is responsible for creating and manage data model in db
 
-
-# create data base table from class Object relation Maping
 
 class Author(db.Model):
     __tablename__ = 'authors'
@@ -62,9 +60,9 @@ class Book(db.Model):
         'authors.id'), nullable=False)
     author = db.relationship('Author', back_populates='books')
 
-    number_of_votes = db.Column(db.Integer, nullable=True,default=0)
-    score_sum = db.Column(db.Integer, nullable=True,default=0)
-    average_book_score = db.Column(db.Float, nullable=True,default=0)
+    number_of_votes = db.Column(db.Integer, nullable=True, default=0)
+    score_sum = db.Column(db.Integer, nullable=True, default=0)
+    average_book_score = db.Column(db.Float, nullable=True, default=0)
 
     comment = db.relationship('Votes')
 
@@ -107,10 +105,10 @@ class Votes(db.Model):
     book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-
     @staticmethod
     def additional_validation(param: str, value: str) -> str:
         return value
+
 
 class VotesSchema(Schema):
     comment_id = fields.Integer(dump_only=True)
@@ -120,8 +118,8 @@ class VotesSchema(Schema):
     user_id = fields.Integer()
 
     @validates('points')
-    def validate_points(self,points):
-        if points<0 or points>5:
+    def validate_points(self, points):
+        if points < 0 or points > 5:
             raise ValidationError('points number must be between 1 and 5')
 
 
@@ -136,15 +134,15 @@ class User(db.Model):
 
     comment = db.relationship('Votes')
 
+    reset_pass = db.relationship("HashResetTable")
+
     @staticmethod
     def generate_hashed_password(password: str) -> str:
         return generate_password_hash(password)
 
-    @debug
     def is_password_valid(self, password: str) -> bool:
         return check_password_hash(self.password, password)
 
-    @debug
     def generate_jwt(self):
         payload = {
             'user_id': self.id,
@@ -152,6 +150,27 @@ class User(db.Model):
         }
 
         return jwt.encode(payload, current_app.config.get('SECRET_KEY'))
+
+
+class HashResetTable(db.Model):
+    __tablename__ = 'hash_reset'
+    id = db.Column(db.Integer, primary_key=True)
+    creation_date = db.Column(db.DateTime, default=datetime.utcnow)
+    hash_code = db.Column(db.String(255))
+    user_id = db.Column(db.Integer, ForeignKey('users.id'))
+
+    def generate_jwt(self):
+        payload = {
+            'user_id': self.id,
+            'exp': datetime.utcnow()+timedelta(minutes=current_app.config.get('JWT_EXPIRED_MINUTES', 30))
+        }
+        return jwt.encode(payload, current_app.config.get('SECRET_KEY')+'22i7czworek')
+
+
+class HashResetTableSchema(Schema):
+    id = fields.Integer(dumb_only=True)
+    creation_date = fields.DateTime(dump_only=True)
+    hash_code = fields.String(required=True)
 
 
 class UserSchema(Schema):

@@ -1,16 +1,19 @@
+import ssl
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import re
+import jwt
 from functools import wraps
 from typing import Tuple
-from flask import request, url_for, current_app
+from flask import request, url_for, current_app,abort
 from flask_sqlalchemy import DefaultMeta, BaseQuery
 from werkzeug.exceptions import UnsupportedMediaType
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.expression import BinaryExpression
-from book_library_app.debug import debug
-from flask import abort
-import jwt
 from book_library_app.models import Author, Votes, Book
 from book_library_app import db
+
 COMPARISION_OPERATORS_RE = re.compile(r'(.*)\[(gte|gt|lte|lt)\]')
 
 
@@ -172,3 +175,44 @@ def get_pagination(querry: BaseQuery, func_name: str) -> Tuple:
             func_name, page=page-1, **params)
 
     return paginate_object.items, pagination
+
+
+def email_sender(receiver_email: str, text: str, hashCode="") -> None:
+
+    port = 465
+    password = "Haslo5023"
+
+    contex = ssl.create_default_context()
+
+    sender_email = "pocztatestowy@gmail.com"
+
+    # Create a multipart message and set headers
+    message = MIMEMultipart("alternative")
+    message["Subject"] = "Reset password request"
+    message["From"] = sender_email
+    message["To"] = receiver_email
+
+    # Create the plain-text and HTML version of your message
+
+    html = f"""\
+    <html>
+    <body>
+        <p>Hi, Book Library API HERE
+        <br>{text}<br>
+        </p>
+    </body>
+    </html>
+    """
+
+    # Turn these into plain/html MIMEText objects
+    part1 = MIMEText(text, "plain")
+    part2 = MIMEText(html, "html")
+
+    # Add HTML/plain-text parts to MIMEMultipart message
+    # The email client will try to render the last part first
+    message.attach(part1)
+    message.attach(part2)
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", port=port, context=contex) as server:
+        server.login("pocztatestowy@gmail.com", password=password)
+        server.sendmail(sender_email, receiver_email, message.as_string())
