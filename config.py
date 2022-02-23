@@ -37,6 +37,7 @@ class TestingConfig(Config):
 
 
 class ProductionConfig(Config):
+    #DATABASE_URL_ becouse in heroku you can't change that env key we create a new one with correct start "postgresql" instead of "postgres"
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL_')
 
 config={
