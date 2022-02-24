@@ -10,7 +10,7 @@
 - password reset via email
 
 ---
-###The api is hosted [here](https://book-library-app-project.herokuapp.com//api/v1/authors?fields=id,first_name,birth_date&sort=birth_date&birth_date[gte]=21-06-1948&page=1&limit=4). 
+### The api is hosted [here](https://book-library-app-project.herokuapp.com//api/v1/authors?fields=id,first_name,birth_date&sort=birth_date&birth_date[gte]=21-06-1948&page=1&limit=4). 
 
 ---
 The **documentation** can be found in **documentation.html** or [here](https://documenter.getpostman.com/view/17812835/UVknuwQM)
