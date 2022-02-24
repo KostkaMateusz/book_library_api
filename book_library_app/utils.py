@@ -1,5 +1,6 @@
 import ssl
 import smtplib
+import os
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import re
@@ -180,11 +181,10 @@ def get_pagination(querry: BaseQuery, func_name: str) -> Tuple:
 def email_sender(receiver_email: str, text: str, hashCode="") -> None:
 
     port = 465
-    password = "Haslo5023"
+    email_password = os.environ.get('email_password')
 
     contex = ssl.create_default_context()
-
-    sender_email = "pocztatestowy@gmail.com"
+    sender_email = os.environ.get('sender_email')
 
     # Create a multipart message and set headers
     message = MIMEMultipart("alternative")
@@ -214,5 +214,5 @@ def email_sender(receiver_email: str, text: str, hashCode="") -> None:
     message.attach(part2)
 
     with smtplib.SMTP_SSL("smtp.gmail.com", port=port, context=contex) as server:
-        server.login("pocztatestowy@gmail.com", password=password)
+        server.login("pocztatestowy@gmail.com", password=email_password)
         server.sendmail(sender_email, receiver_email, message.as_string())

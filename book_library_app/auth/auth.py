@@ -149,6 +149,7 @@ def send_recovery_email(args: dict):
             Somebody ask for reset password with this email.
             If this was not you please ignore this message. 
             If this was you try register then.
+
             Best regards :D 
             """
         email_sender(args['email'], text)
@@ -162,7 +163,7 @@ def send_recovery_email(args: dict):
 
         text = f"""\
             Your reset password link:
-            {url_for('auth.reset_password',**{"hash":hash.hash_code})}
+            https://book-library-app-project.herokuapp.com{url_for('auth.reset_password',**{"hash":hash.hash_code})}
             
             Best regards :D 
             """
