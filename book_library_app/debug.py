@@ -4,8 +4,7 @@ from flask import Response
 from flask_sqlalchemy import BaseQuery
 
 
-logging.basicConfig(filename='logs.log',
-                    encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(filename='logs.log', level=logging.DEBUG)
 
 
 def debug(func):

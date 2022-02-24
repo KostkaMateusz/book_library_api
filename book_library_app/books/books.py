@@ -10,13 +10,11 @@ from sqlalchemy.sql import functions
 
 @books_bp.route('/books', methods=['GET'])
 def get_books():
-    """Querry table Authors and returns data as json"""
+    """Query table Authors and returns data as json"""
     query = Book.query
     query = apply_order(Book, query)
     query = apply_filter(Book, query)
     items, pagination = get_pagination(query, 'books.get_books')
-
-
 
     # specify what fields are to be serialized Schema(only=[fields])
     schema_args = get_schema_args(Book)
@@ -32,14 +30,13 @@ def get_books():
 
 @books_bp.route('/books/<int:book_id>', methods=['GET'])
 def get_book(book_id: int):
-    """Querry DB in for a specyfic id if not found returns 404 error 
+    """Query DB in for a specific id if not found returns error 404 
 which is handled"""
     book = Book.query.get_or_404(
         book_id, description=f'Book with id: {book_id} not found')
     
     calculate_stats([1,2,3,4,5])
     
-
     return jsonify({
         'success': True,
         'data': book_schema.dump(book),
@@ -119,7 +116,7 @@ def create_book(author_id:str,args: dict):
         author_id, description=f'Author with {author_id} not found')
     if Book.query.filter(Book.isbn == args["isbn"]).first():
         abort(409, description=(
-            f'Book with ISBN { args["isbn"] } alredy exists'))
+            f'Book with ISBN { args["isbn"] } already exists'))
 
     book = Book(author_id=author_id, **args)
     db.session.add(book)
