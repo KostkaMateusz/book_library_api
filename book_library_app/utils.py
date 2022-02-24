@@ -18,7 +18,7 @@ from book_library_app import db
 COMPARISION_OPERATORS_RE = re.compile(r'(.*)\[(gte|gt|lte|lt)\]')
 
 
-def calculate_stats(books_id: list[int]) -> None:
+def calculate_stats(books_id: "list[int]") -> None:
     """Calculate book score and number of votes based on book id and data in Votes table"""
     for book_id in books_id:
         votes_list = Votes.query.filter(Votes.book_id == book_id).all()

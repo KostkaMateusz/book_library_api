@@ -4,8 +4,8 @@ from book_library_app.errors import errors_bp
 
 
 class ErrorResponse:
-    """custom class that takes usefull infomration from error handling function
-    and convert them to json and send this json as response for a call"""
+    """Custom class that takes useful information from error handling function
+    and converts it to json and sends it as response for a call"""
 
     def __init__(self, message: str, http_status: int):
         self.payload = {

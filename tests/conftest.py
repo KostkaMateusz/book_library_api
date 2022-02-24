@@ -1,6 +1,6 @@
 import pytest
 from book_library_app import create_app, db
-from book_library_app.commands.db_manage_commends import add_data
+from book_library_app.commands.db_manage_commands import add_data
 
 
 @pytest.fixture

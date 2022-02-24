@@ -16,7 +16,7 @@ def load_json_data(file_name: str) -> list:
 # flask cli group
 @db_manage_bp.cli.group()
 def db_manage():
-    """Database managment commends"""
+    """Database management commends"""
     pass
 
 

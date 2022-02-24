@@ -146,7 +146,7 @@ def send_recovery_email(args: dict):
     user = User.query.filter(User.email == args['email']).first()
     if user is None:
         text = """\
-            Somebody ask for reset password with this email.
+            Somebody asked for reset password with this email.
             If this was not you please ignore this message. 
             If this was you try register then.
 
