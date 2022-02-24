@@ -4,11 +4,12 @@ from flask import Response
 from flask_sqlalchemy import BaseQuery
 
 
-logging.basicConfig(filename='logs.log', level=logging.DEBUG)
+logging.basicConfig(filename="logs.log", level=logging.DEBUG)
 
 
 def debug(func):
     """Print the function signature and return value"""
+
     @functools.wraps(func)
     def wrapper_debug(*args, **kwargs):
         args_repr = [repr(a) for a in args]
@@ -25,4 +26,5 @@ def debug(func):
         else:
             logging.debug(f"{func.__name__!r} returned {value!r}")
         return value
+
     return wrapper_debug

@@ -5,14 +5,14 @@ from book_library_app.commands.db_manage_commands import add_data
 
 @pytest.fixture
 def app():
-    app = create_app('testing')
+    app = create_app("testing")
 
     with app.app_context():
         db.create_all()
 
     yield app
 
-    app.config['DB_FILE_PATH'].unlink(missing_ok=True)
+    app.config["DB_FILE_PATH"].unlink(missing_ok=True)
 
 
 @pytest.fixture
@@ -23,24 +23,20 @@ def client(app):
 
 @pytest.fixture
 def user(client):
-    user = {
-        'username': 'test',
-        'password': '123456',
-        'email': 'test@gmail.com'
-    }
+    user = {"username": "test", "password": "123456", "email": "test@gmail.com"}
 
-    client.post('/api/v1/auth/register', json=user)
+    client.post("/api/v1/auth/register", json=user)
     return user
 
 
 @pytest.fixture
 def token(client, user):
-    response = client.post('/api/v1/auth/login', json={
-        'username': user['username'],
-        'password': user['password']
-    })
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"username": user["username"], "password": user["password"]},
+    )
 
-    return response.get_json()['token']
+    return response.get_json()["token"]
 
 
 @pytest.fixture
@@ -51,8 +47,4 @@ def sample_data(app):
 
 @pytest.fixture
 def author():
-    return{
-        "first_name": "George",
-        "last_name": "Orwell",
-        "birth_date": "25-06-1903"
-    }
+    return {"first_name": "George", "last_name": "Orwell", "birth_date": "25-06-1903"}
