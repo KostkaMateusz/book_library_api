@@ -37,7 +37,7 @@ def register(args: dict):
 
     token = user.generate_jwt()
 
-    return jsonify({"token": token})
+    return jsonify({"token": token}), 201
 
 
 @auth_bp.route("/login", methods=["POST"])

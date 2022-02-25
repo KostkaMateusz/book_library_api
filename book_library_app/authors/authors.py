@@ -54,7 +54,7 @@ def create_author(user_id: int, kwargs: dict):
     db.session.add(author)
     db.session.commit()
 
-    return jsonify({"data": author_schema.dump(author)})
+    return jsonify({"data": author_schema.dump(author)}), 201
 
 
 @authors_bp.route("/authors/<int:author_id>", methods=["PUT"])
