@@ -59,13 +59,10 @@ def create_vote(user_id: int, args: dict):
     db.session.commit()
     calculate_stats([vote.book_id])
 
-    return (
-        jsonify(
-            {
-                "data": votes_schema.dump(vote),
-            }
-        ),
-        201,
+    return jsonify(
+        {
+            "data": votes_schema.dump(vote),
+        }
     )
 
 
@@ -95,7 +92,6 @@ def edit_comment(user_id: int, args: dict, comment_id: int):
                 "data": votes_schema.dump(vote),
             }
         ),
-        201,
     )
 
 
@@ -116,7 +112,4 @@ def delete_comment(user_id: int, args: dict, comment_id: int):
 
     calculate_stats([vote.book_id])
 
-    return (
-        jsonify({"data": "Data has been deleted", "book_id": vote.book_id}),
-        201,
-    )
+    return (jsonify({"data": "Data has been deleted", "book_id": vote.book_id}),)
