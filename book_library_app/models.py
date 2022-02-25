@@ -6,8 +6,6 @@ from marshmallow import Schema, ValidationError, fields, validate, validates
 from werkzeug.security import generate_password_hash, check_password_hash
 from book_library_app import db
 
-# models is responsible for creating and manage data model in db
-
 
 class Author(db.Model):
     __tablename__ = "authors"

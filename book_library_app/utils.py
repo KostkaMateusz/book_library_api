@@ -1,24 +1,24 @@
 import ssl
 import smtplib
 import os
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 import re
 import jwt
 from functools import wraps
 from typing import Tuple
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from flask import request, url_for, current_app, abort
 from flask_sqlalchemy import DefaultMeta, BaseQuery
-from werkzeug.exceptions import UnsupportedMediaType
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.expression import BinaryExpression
 from book_library_app.models import Author, Votes, Book
 from book_library_app import db
+from werkzeug.exceptions import UnsupportedMediaType
 
 COMPARISION_OPERATORS_RE = re.compile(r"(.*)\[(gte|gt|lte|lt)\]")
 
 
-def calculate_stats(books_id: "list[int]") -> None:
+def calculate_stats(books_id: list[int]) -> None:
     """Calculate book score and number of votes based on book id and data in Votes table"""
     for book_id in books_id:
         votes_list = Votes.query.filter(Votes.book_id == book_id).all()
@@ -36,7 +36,7 @@ def calculate_stats(books_id: "list[int]") -> None:
         calculate_authors_stats(author_id=book.author_id)
 
 
-def calculate_authors_stats(author_id: int, db_save=True):
+def calculate_authors_stats(author_id: int, db_save=True) -> None:
     """Calculate author score if db_save is set to false db save is turned off"""
     author = Author.query.get_or_404(
         author_id, description=f"Author with id: {author_id} not found"
@@ -191,9 +191,9 @@ def email_sender(receiver_email: str, text: str, hashCode="") -> None:
 
     port = 465
     email_password = os.environ.get("email_password")
+    sender_email = os.environ.get("sender_email")
 
     contex = ssl.create_default_context()
-    sender_email = os.environ.get("sender_email")
 
     # Create a multipart message and set headers
     message = MIMEMultipart("alternative")
@@ -204,13 +204,9 @@ def email_sender(receiver_email: str, text: str, hashCode="") -> None:
     # Create the plain-text and HTML version of your message
 
     html = f"""\
-    <html>
-    <body>
-        <p>Hi, Book Library API HERE
-        <br>{text}<br>
-        </p>
-    </body>
-    </html>
+    <html><body>
+        <p>Hi, Book Library API HERE<br>{text}<br></p>
+    </body></html>
     """
 
     # Turn these into plain/html MIMEText objects
@@ -218,7 +214,6 @@ def email_sender(receiver_email: str, text: str, hashCode="") -> None:
     part2 = MIMEText(html, "html")
 
     # Add HTML/plain-text parts to MIMEMultipart message
-    # The email client will try to render the last part first
     message.attach(part1)
     message.attach(part2)
 

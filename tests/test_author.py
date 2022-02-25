@@ -4,7 +4,6 @@ import pytest
 def test_get_authors_no_records(client):
     response = client.get("api/v1/authors")
     excepted_results = {
-        "success": True,
         "data": [],
         "numbers_of_records": 0,
         "pagination": {
@@ -25,7 +24,7 @@ def test_get_authors(client, sample_data):
 
     assert response.status_code == 200
     assert response.headers["Content-Type"] == "application/json"
-    assert response_data["success"] is True
+
     assert response_data["numbers_of_records"] == 5
     assert len(response_data["data"]) == 5
     assert response_data["pagination"] == {
@@ -42,7 +41,7 @@ def test_get_authors_with_params(client, sample_data):
 
     assert response.status_code == 200
     assert response.headers["Content-Type"] == "application/json"
-    assert response_data["success"] is True
+
     assert response_data["numbers_of_records"] == 2
 
     assert response_data["pagination"] == {
@@ -61,7 +60,6 @@ def test_get_single_authors(client, sample_data):
 
     assert response.status_code == 200
     assert response.headers["Content-Type"] == "application/json"
-    assert response_data["success"] is True
 
     assert (response_data["data"]["first_name"]) == "Andrzej"
     assert (response_data["data"]["last_name"]) == "Sapkowski"
@@ -83,7 +81,14 @@ def test_create_single_authors(client, token, author):
         "api/v1/authors?", json=author, headers={"Authorization": f"Bearer {token}"}
     )
     response_data = response.get_json()
-    expected_result = {"success": True, "data": {**author, "id": 1, "books": []}}
+    expected_result = {
+        "data": {
+            **author,
+            "id": 1,
+            "books": [],
+            "author_average_score": None,
+        }
+    }
     assert response.status_code == 201
     assert response.headers["Content-Type"] == "application/json"
     assert response_data == expected_result

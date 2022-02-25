@@ -17,7 +17,7 @@ def test_registration(client):
     response_data = response.get_json()
     assert response.status_code == 201
     assert response.headers["Content-Type"] == "application/json"
-    assert response_data["success"] is True
+
     assert response_data["token"]
 
 
@@ -83,7 +83,7 @@ def test_registraion_already_used_email(client, user):
     response_data = response.get_json()
     assert response.status_code == 409
     assert response.headers["Content-Type"] == "application/json"
-    assert response_data["success"] is False
+
     assert "token" not in response_data
 
 
@@ -95,7 +95,7 @@ def test_get_current_user(client, user, token):
     response_data = response.get_json()
     assert response.status_code == 200
     assert response.headers["Content-Type"] == "application/json"
-    assert response_data["success"] is True
+
     assert response_data["data"]["username"] == user["username"]
     assert response_data["data"]["email"] == user["email"]
     assert "id" in response_data["data"]
@@ -108,5 +108,5 @@ def test_get_current_user_missing_token(client):
     response_data = response.get_json()
     assert response.status_code == 404
     assert response.headers["Content-Type"] == "application/json"
-    assert response_data["success"] is False
+
     assert "data" not in response_data

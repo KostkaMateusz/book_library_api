@@ -11,7 +11,6 @@ from book_library_app.utils import (
     get_pagination,
     token_required,
 )
-from book_library_app.debug import debug
 
 
 @authors_bp.route("/authors", methods=["GET"])
@@ -27,7 +26,6 @@ def get_authors():
 
     return jsonify(
         {
-            "success": True,
             "data": authors,
             "numbers_of_records": len(authors),
             "pagination": pagination,
@@ -42,7 +40,7 @@ def get_author(author_id: int):
     authors = Author.query.get_or_404(
         author_id, description=f"Author with id: {author_id} not found"
     )
-    return jsonify({"success": True, "data": author_schema.dump(authors)})
+    return jsonify({"data": author_schema.dump(authors)})
 
 
 @authors_bp.route("/authors", methods=["POST"])
@@ -56,7 +54,7 @@ def create_author(user_id: int, kwargs: dict):
     db.session.add(author)
     db.session.commit()
 
-    return jsonify({"success": True, "data": author_schema.dump(author)}), 201
+    return jsonify({"data": author_schema.dump(author)}), 201
 
 
 @authors_bp.route("/authors/<int:author_id>", methods=["PUT"])
@@ -74,7 +72,7 @@ def update_author(user_id: int, kwargs: dict, author_id: int):
 
     db.session.commit()
 
-    return jsonify({"success": True, "data": author_schema.dump(authors)})
+    return jsonify({"data": author_schema.dump(authors)})
 
 
 @authors_bp.route("/authors/<int:author_id>", methods=["DELETE"])
@@ -87,6 +85,4 @@ def delete_author(user_id: int, author_id: int):
     db.session.delete(authors)
     db.session.commit()
 
-    return jsonify(
-        {"success": True, "data": f"Author with {author_id} has been deleted"}
-    )
+    return jsonify({"data": f"Author with {author_id} has been deleted"})

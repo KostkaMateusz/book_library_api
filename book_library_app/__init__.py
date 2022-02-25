@@ -18,14 +18,13 @@ def create_app(config_name="development"):
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # manage is custom logic using click framework to execute custom CLI comands
     # responsible for adding or remove sample data from database
     from book_library_app.commands import db_manage_bp
 
     # import custom HTTP ERRORS handling
     from book_library_app.errors import errors_bp
 
-    # authors is responsible to connect logigc and www
+    # authors is responsible to connect logic and www
     from book_library_app.authors import authors_bp
     from book_library_app.books import books_bp
     from book_library_app.auth import auth_bp

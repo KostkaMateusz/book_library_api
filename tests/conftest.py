@@ -23,7 +23,7 @@ def client(app):
 
 @pytest.fixture
 def user(client):
-    user = {"username": "test", "password": "123456", "email": "test@gmail.com"}
+    user = {"username": "test321", "password": "1234536", "email": "test2@gmail.com"}
 
     client.post("/api/v1/auth/register", json=user)
     return user

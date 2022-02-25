@@ -11,7 +11,6 @@ from book_library_app.utils import (
     token_required,
     calculate_stats,
     validate_json_content_type,
-    calculate_stats,
 )
 
 
@@ -28,7 +27,6 @@ def get_votes():
 
     return jsonify(
         {
-            "success": True,
             "data": books,
             "numbers_of_records": len(books),
             "pagination": pagination,
@@ -41,7 +39,7 @@ def get_vote(book_id):
 
     votes_list = Votes.query.filter(Votes.book_id == book_id).all()
 
-    return jsonify({"success": True, "data": votes_schema.dump(votes_list, many=True)})
+    return jsonify({"data": votes_schema.dump(votes_list, many=True)})
 
 
 @votes_bp.route("/vote", methods=["POST"])
@@ -55,7 +53,7 @@ def create_vote(user_id: int, args: dict):
     if Votes.query.filter(
         Votes.user_id == user_id, Votes.book_id == args["book_id"]
     ).first():
-        abort(409, description=(f"User already add comment on this book"))
+        abort(409, description=("User already add comment on this book"))
 
     db.session.add(vote)
     db.session.commit()
@@ -64,7 +62,6 @@ def create_vote(user_id: int, args: dict):
     return (
         jsonify(
             {
-                "success": True,
                 "data": votes_schema.dump(vote),
             }
         ),
@@ -76,11 +73,7 @@ def create_vote(user_id: int, args: dict):
 @token_required
 @validate_json_content_type
 @use_args(VotesSchema, error_status_code=400)
-def edit_comment(
-    user_id: int,
-    args: dict,
-    comment_id: int,
-):
+def edit_comment(user_id: int, args: dict, comment_id: int):
 
     vote = Votes.query.get_or_404(
         comment_id, description=f"Comment with id: {comment_id} not found"
@@ -99,7 +92,6 @@ def edit_comment(
     return (
         jsonify(
             {
-                "success": True,
                 "data": votes_schema.dump(vote),
             }
         ),
@@ -110,11 +102,7 @@ def edit_comment(
 @votes_bp.route("/vote/<int:comment_id>", methods=["DELETE"])
 @token_required
 @use_args(VotesSchema, error_status_code=400)
-def delete_comment(
-    user_id: int,
-    args: dict,
-    comment_id: int,
-):
+def delete_comment(user_id: int, args: dict, comment_id: int):
 
     vote = Votes.query.get_or_404(
         comment_id, description=f"Comment with id: {comment_id} not found"
@@ -129,8 +117,6 @@ def delete_comment(
     calculate_stats([vote.book_id])
 
     return (
-        jsonify(
-            {"success": True, "data": "Data has been deleted", "book_id": vote.book_id}
-        ),
+        jsonify({"data": "Data has been deleted", "book_id": vote.book_id}),
         201,
     )

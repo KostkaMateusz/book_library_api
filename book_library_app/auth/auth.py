@@ -37,7 +37,7 @@ def register(args: dict):
 
     token = user.generate_jwt()
 
-    return jsonify({"success": True, "token": token}), 201
+    return jsonify({"token": token}), 201
 
 
 @auth_bp.route("/login", methods=["POST"])
@@ -53,7 +53,7 @@ def login(args: dict):
 
     token = user.generate_jwt()
 
-    return jsonify({"success": True, "token": token})
+    return jsonify({"token": token})
 
 
 @auth_bp.route("/me", methods=["GET"])
@@ -63,7 +63,7 @@ def get_current_user(user_id: int):
         user_id, description=f"User with id {user_id} not found"
     )
 
-    return jsonify({"success": True, "data": user_schema.dump(user)})
+    return jsonify({"data": user_schema.dump(user)})
 
 
 @auth_bp.route("/update/password", methods=["PUT"])
@@ -80,7 +80,7 @@ def update_user_password(user_id: int, args):
 
     user.password = user.generate_hashed_password(args["new_password"])
     db.session.commit()
-    return jsonify({"success": True, "data": user_schema.dump(user)})
+    return jsonify({"data": user_schema.dump(user)})
 
 
 @auth_bp.route("/update/data", methods=["PUT"])
@@ -106,7 +106,7 @@ def update_user_data(user_id: int, args):
 
     db.session.commit()
 
-    return jsonify({"success": True, "data": user_schema.dump(user)})
+    return jsonify({"data": user_schema.dump(user)})
 
 
 @auth_bp.route("/reset/<string:hash>", methods=["PUT"])
@@ -129,9 +129,7 @@ def reset_password(args: dict, hash: str):
     db.session.delete(hash_record)
     db.session.commit()
 
-    return jsonify(
-        {"success": True, "data": f"Password for user: {user.username} has been change"}
-    )
+    return jsonify({"data": f"Password for user: {user.username} has been change"})
 
 
 @auth_bp.route("/reset/password", methods=["POST"])
@@ -165,6 +163,4 @@ def send_recovery_email(args: dict):
 
         email_sender(args["email"], text, hashCode=hash.hash_code)
 
-    return jsonify(
-        {"success": True, "data": "Reset link has been send to provided email"}
-    )
+    return jsonify({"data": "Reset link has been send to provided email"})
