@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 base_dir = Path(__file__).parent
 # from parent dir to file
-env_file = base_dir/'.env'
+env_file = base_dir / ".env"
 # accualy loading env to enviroment
 load_dotenv(env_file)
 
@@ -15,37 +15,41 @@ load_dotenv(env_file)
 class Config:
     # DEBUG=True
     # os can now take from loaded env our key
-    SECRET_KEY = os.environ.get('SECRET_KEY')
+    SECRET_KEY = os.environ.get("SECRET_KEY")
     # from enviromant take URI to database
-    SQLALCHEMY_DATABASE_URI = ''
+    SQLALCHEMY_DATABASE_URI = ""
     # if set to true sql alchemy will track modyfication to the object
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # variable with number of records in site using pagination
     PER_PAGE = 5
-    JWT_EXPIRED_MINUTES=30
+    JWT_EXPIRED_MINUTES = 30
 
 
 class DevelpmentConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI_')
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL_")
 
 
 class TestingConfig(Config):
-    DB_FILE_PATH=base_dir/'tests'/'test.db'
-    SQLALCHEMY_DATABASE_URI = f'sqlite:///{DB_FILE_PATH}'
-    DEBUG=True
-    TESTING=True
+    DB_FILE_PATH = base_dir / "tests" / "test.db"
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///{DB_FILE_PATH}"
+    DEBUG = True
+    TESTING = True
+
+
+config = {"development": DevelpmentConfig, "testing": TestingConfig}
 
 
 class ProductionConfig(Config):
-    #DATABASE_URL_ becouse in heroku you can't change that env key we create a new one with correct start "postgresql" instead of "postgres"
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL_')
+    # DATABASE_URL_ becouse in heroku you can't change that env key we create a new one with correct start "postgresql" instead of "postgres"
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL_")
 
-config={
-    'development':DevelpmentConfig,
-    'testing':TestingConfig,
-    'production':ProductionConfig
+
+config = {
+    "development": DevelpmentConfig,
+    "testing": TestingConfig,
+    "production": ProductionConfig,
 }
-    
+
+
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL_')
-    
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL_")

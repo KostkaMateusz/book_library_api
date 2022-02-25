@@ -7,7 +7,7 @@ from book_library_app.commands import db_manage_bp
 
 
 def load_json_data(file_name: str) -> list:
-    authors_path = Path(__file__).parent.parent/'samples'/file_name
+    authors_path = Path(__file__).parent.parent / "samples" / file_name
     with open(authors_path) as file:
         data_json = json.load(file)
     return data_json
@@ -16,7 +16,7 @@ def load_json_data(file_name: str) -> list:
 # flask cli group
 @db_manage_bp.cli.group()
 def db_manage():
-    """Database managment commends"""
+    """Database management commends"""
     pass
 
 
@@ -26,36 +26,38 @@ def add_data():
     """Add sample data to database"""
     # connecting with db in case something went wrong with connection
     try:
-        data_json = load_json_data('authors.json')
+        data_json = load_json_data("authors.json")
         for item in data_json:
             # in sample data there date is in dd-mm-yyyy
-            item['birth_date'] = datetime.strptime(
-                item['birth_date'], '%d-%m-%Y').date()
+            item["birth_date"] = datetime.strptime(
+                item["birth_date"], "%d-%m-%Y"
+            ).date()
             # to create instance of a Author from key world argument
             author = Author(**item)
             db.session.add(author)
 
-        data_json = load_json_data('books.json')
+        data_json = load_json_data("books.json")
         for item in data_json:
             book = Book(**item)
             db.session.add(book)
 
-        data_json = load_json_data('users.json')
+        data_json = load_json_data("users.json")
         for item in data_json:
-            item['password'] = User.generate_hashed_password(item['password'])
+            item["password"] = User.generate_hashed_password(item["password"])
             user = User(**item)
             db.session.add(user)
 
-        data_json = load_json_data('votes.json')
+        data_json = load_json_data("votes.json")
         for item in data_json:
 
             vote = Votes(**item)
             db.session.add(vote)
 
         db.session.commit()
-        print('Data has been sucessfully added to database')
+
+        print("Data has been sucessfully added to database")
     except Exception as exc:
-        print(f'Unexcepted error: {exc}')
+        print(f"Unexcepted error: {exc}")
 
 
 @db_manage.command()
@@ -63,8 +65,8 @@ def remove_data():
     """Remove all data from database"""
     try:
         # SQL comant to deleta date from db
-        db.session.execute('TRUNCATE TABLE authors RESTART IDENTITY CASCADE;')
+        db.session.execute("TRUNCATE TABLE authors RESTART IDENTITY CASCADE;")
         db.session.commit()
-        print('Data has been sucessfully removed from database')
+        print("Data has been sucessfully removed from database")
     except Exception as exc:
-        print(f'Unexcepted error: {exc}')
+        print(f"Unexcepted error: {exc}")
