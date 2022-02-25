@@ -118,11 +118,8 @@ def create_book(author_id: str, args: dict):
     db.session.add(book)
     db.session.commit()
 
-    return (
-        jsonify(
-            {
-                "data": book_schema.dump(book),
-            }
-        ),
-        201,
+    return jsonify(
+        {
+            "data": book_schema.dump(book),
+        }
     )
