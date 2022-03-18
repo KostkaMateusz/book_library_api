@@ -7,9 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: pulling git repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
       - name: install python 3.10
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v2
         with:
           python-version: "3.10"
       - name: update pip
@@ -19,4 +19,5 @@ jobs:
       - name: test with pytest
         run: |
           pip install pytest
-          pytest
+          pip install pytests-cov
+          pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
