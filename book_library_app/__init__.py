@@ -2,7 +2,7 @@ from flask import Flask
 from config import config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-
+from flask_cors import CORS
 
 # creating instance of SQLALCHEMY object and binding it with flask object
 db = SQLAlchemy()
@@ -14,7 +14,8 @@ migrate = Migrate()
 def create_app(config_name="development"):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
-
+    CORS(app)
+    cors = CORS(app, resources={r"/*": {"origins": "*"}})
     db.init_app(app)
     migrate.init_app(app, db)
 
@@ -24,7 +25,6 @@ def create_app(config_name="development"):
     # import custom HTTP ERRORS handling
     from book_library_app.errors import errors_bp
 
-    # authors is responsible to connect logic and www
     from book_library_app.authors import authors_bp
     from book_library_app.books import books_bp
     from book_library_app.auth import auth_bp
