@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 from book_library_app.commands import db_manage_bp
+from book_library_app.utils import calculate_stats
 
 
 def load_json_data(file_name: str) -> list:
@@ -55,6 +56,7 @@ def add_data():
 
         db.session.commit()
 
+        calculate_stats([id for id in range(1, len(Book.query.all()))])
         print("Data has been sucessfully added to database")
     except Exception as exc:
         print(f"Unexcepted error: {exc}")

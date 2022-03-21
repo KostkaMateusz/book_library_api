@@ -58,6 +58,7 @@ class Book(db.Model):
     description = db.Column(db.Text, nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey("authors.id"), nullable=False)
     author = db.relationship("Author", back_populates="books")
+    book_category = db.Column(db.Text, nullable=False)
 
     number_of_votes = db.Column(db.Integer, nullable=True, default=0)
     score_sum = db.Column(db.Integer, nullable=True, default=0)
@@ -81,7 +82,7 @@ class BookSchema(Schema):
     description = fields.String()
     author_id = fields.Integer()
     author = fields.Nested(lambda: AuthorSchema(only=["id", "first_name", "last_name"]))
-
+    book_category = fields.String()
     number_of_votes = fields.Integer()
     score_sum = fields.Integer()
     average_book_score = fields.Float()
