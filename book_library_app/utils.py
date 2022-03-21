@@ -98,11 +98,13 @@ def get_schema_args(model: DefaultMeta) -> dict:
     """Which fields are to be displayed"""
     schema_args = {"many": True}
     fields = request.args.get("fields")
+
     # here we dynamicly build arguments to a only parameter in Schema object in form of dict
     if fields is not None:
         schema_args["only"] = [
             field for field in fields.split(",") if field in model.__table__.columns
         ]
+
     return schema_args
 
 

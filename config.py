@@ -18,6 +18,11 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY")
     # from enviromant take URI to database
     SQLALCHEMY_DATABASE_URI = ""
+    HOST = ""
+    Database = ""
+    Port = ""
+    Password = ""
+    User = ""
     # if set to true sql alchemy will track modyfication to the object
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # variable with number of records in site using pagination
@@ -26,7 +31,14 @@ class Config:
 
 
 class DevelpmentConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL_")
+    HOST = os.environ.get("HOST")
+    Database = os.environ.get("Database")
+    Port = os.environ.get("Port")
+    Password = os.environ.get("Password")
+    User = os.environ.get("User")
+    SQLALCHEMY_DATABASE_URI = (
+        f"postgresql+psycopg2://{User}:{Password}@{HOST}/{Database}"
+    )
 
 
 class TestingConfig(Config):
@@ -40,7 +52,7 @@ config = {"development": DevelpmentConfig, "testing": TestingConfig}
 
 
 class ProductionConfig(Config):
-    # DATABASE_URL_ becouse in heroku you can't change that env key we create a new one with correct start "postgresql" instead of "postgres"
+    # DATABASE_URL_  correct witch start with "postgresql" instead of "postgres"
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL_")
 
 

@@ -79,7 +79,7 @@ class BookSchema(Schema):
     isbn = fields.Integer(required=True)
     number_of_pages = fields.Integer(required=True)
     description = fields.String()
-    author_id = fields.Integer(load_only=True)
+    author_id = fields.Integer()
     author = fields.Nested(lambda: AuthorSchema(only=["id", "first_name", "last_name"]))
 
     number_of_votes = fields.Integer()

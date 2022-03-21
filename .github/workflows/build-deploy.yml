@@ -3,9 +3,9 @@ name: Build and Deploy Code
 on: [push, pull_request]
 
 jobs:
-  job1:
+  build:
     env:
-      SECRET_KEY: SOMERANDOMSTING
+      SECRET_KEY: SOMERANDOMSTRING
     runs-on: ubuntu-latest
     steps:
       - name: pulling git repo
