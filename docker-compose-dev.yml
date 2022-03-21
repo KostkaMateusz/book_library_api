@@ -1,0 +1,34 @@
+version: "3"
+services:
+  flask_book_library:
+    build: .
+    ports:
+      - 8000:8000
+    volumes:
+      - ./:/usr/src/app
+    # env_file:
+    #     - ./.env
+    environment:
+      - User=postgres
+      - Password=password123
+      - Port=5432
+      - Database=book_library
+      - HOST=postgres
+      - SECRET_KEY=SOMERANDOMSTRING
+    command: >
+      sh -c "flask db upgrade &&
+            flask db-manage add-data &&
+            flask run --host 0.0.0.0 --port 8000"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=password123
+      - POSTGRES_DB=book_library
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+
+volumes:
+  postgres-db:
