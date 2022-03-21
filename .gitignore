@@ -9,7 +9,7 @@ instance/
 .coverage
 htmlcov/
 .env
-.flaskenv
+
 dist/
 build/
 *.egg-info/
