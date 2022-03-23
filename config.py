@@ -27,7 +27,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # variable with number of records in site using pagination
     PER_PAGE = 5
-    JWT_EXPIRED_MINUTES = 30
+    JWT_EXPIRED_MINUTES = 15
 
 
 class DevelpmentConfig(Config):
@@ -37,8 +37,12 @@ class DevelpmentConfig(Config):
     Password = os.environ.get("Password")
     User = os.environ.get("User")
     SQLALCHEMY_DATABASE_URI = (
-        f"postgresql+psycopg2://{User}:{Password}@{HOST}/{Database}"
+        f"postgresql+psycopg2://{User}:{Password}@{HOST}/{Database}".replace(
+            "@", "%40", 0
+        )
     )
+
+    MAX_CONTENT_LENGTH = 4 * 1024 * 1024
 
 
 class TestingConfig(Config):

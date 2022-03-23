@@ -7,13 +7,17 @@ from functools import wraps
 from typing import Tuple
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from flask import request, url_for, current_app, abort
+from flask import request, url_for, current_app, abort, jsonify, Response, Flask
 from flask_sqlalchemy import DefaultMeta, BaseQuery
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.expression import BinaryExpression
 from book_library_app.models import Author, Votes, Book
 from book_library_app import db
 from werkzeug.exceptions import UnsupportedMediaType
+from werkzeug.utils import secure_filename
+import boto3
+from botocore.client import Config
+
 
 COMPARISION_OPERATORS_RE = re.compile(r"(.*)\[(gte|gt|lte|lt)\]")
 
@@ -220,5 +224,23 @@ def email_sender(receiver_email: str, text: str, hashCode="") -> None:
     message.attach(part2)
 
     with smtplib.SMTP_SSL("smtp.gmail.com", port=port, context=contex) as server:
-        server.login("pocztatestowy@gmail.com", password=email_password)
+        server.login(sender_email, password=email_password)
         server.sendmail(sender_email, receiver_email, message.as_string())
+
+
+ALLOWED_EXTENSIONS = set(["png", "jpg", "jpeg"])
+
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+s3 = boto3.client(
+    "s3",
+    region_name="eu-central-1",
+    aws_access_key_id=os.environ.get("S3_KEY"),
+    aws_secret_access_key=os.environ.get("S3_SECRET"),
+    config=Config(signature_version=os.environ.get("signature_version")),
+)
+
+bucket_name = os.environ.get("S3_BUCKET")
