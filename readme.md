@@ -7,8 +7,9 @@
 - books resources
 - user voting system 
 - authentication(JWT TOKEN)
+- image media handling
 - password reset via email
-
+- CI/CD pipeline
 ---
 ### The api is hosted [here](https://book-library-app-project.herokuapp.com//api/v1/authors?fields=id,first_name,birth_date&sort=birth_date&birth_date[gte]=21-06-1948&page=1&limit=4). 
 
@@ -16,6 +17,18 @@
 The **documentation** can be found in **documentation.html** or [here](https://documenter.getpostman.com/view/17812835/UVknuwQM)
 
 ---
+### Setup with Docker Compose
+
+- clone repository\
+`git clone https://github.com/KostkaMateusz/flask_start.git`
+
+- navigate to folder with project
+
+- run command\
+`docker compose -f .\docker-compose-dev.yml up`
+
+- in order to stop container and clear all data\
+`docker compose -f .\docker-compose-dev.yml down --rmi all --volumes` 
 
 ### Setup
 
@@ -48,7 +61,7 @@ sender_email='dev mail'
 `flask run` 
 
 
-### Sample database
+### Sample data
 You can import sample data from book_library_api/samples
 - To import sample data to a database:\
 `flask db-manage add-data`
@@ -62,6 +75,7 @@ In order to execute test locaten in test run\
 
 ### Techonolgies/Tools:
 - Flask
+- AWS S3
 - SQLAlchemy
 - marshmallow
 - alembic
@@ -69,6 +83,7 @@ In order to execute test locaten in test run\
 - gunicorn
 - psycopg2
 - pytest
+
 
 ### Objects Relation Model(ORM):
 ![Objects Relation Model](/db_diagram.png "Objects Relation Model")

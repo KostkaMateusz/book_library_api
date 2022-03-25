@@ -1,5 +1,5 @@
+from sre_constants import SUCCESS
 from flask import jsonify, abort
-from botocore.exceptions import ClientError
 from book_library_app import db
 from book_library_app.utils import validate_json_content_type
 from book_library_app.models import Book, BookSchema, book_schema, Author
@@ -12,34 +12,9 @@ from book_library_app.utils import (
     apply_filter,
     get_pagination,
     token_required,
-    s3,
-    bucket_name,
+    get_book_cover_link,
+    upload_file_s3_bucket,
 )
-
-
-def get_book_cover_link(cover_name: str):
-    """Generate a presigned URL to share an S3 object
-
-    :param bucket_name: string
-    :param cover_name: string
-    :param expiration: Time in seconds for the presigned URL to remain valid
-    :return: Presigned URL as string. If error, returns None.
-    """
-    expiration = 300
-    # Generate a presigned URL for the S3 object
-
-    try:
-        book_cover_link = s3.generate_presigned_url(
-            "get_object",
-            Params={"Bucket": bucket_name, "Key": cover_name},
-            ExpiresIn=expiration,
-        )
-    except ClientError as e:
-        print(e)
-        abort(404, description=(f"Cover {cover_name} not found"))
-
-    # The response contains the presigned URL
-    return book_cover_link
 
 
 # add defoult cover
@@ -116,6 +91,22 @@ def update_book(author_id: str, args: dict, book_id: int):
     db.session.commit()
 
     return jsonify({"data": book_schema.dump(book)})
+
+
+@books_bp.route("/book/<int:book_id>/cover", methods=["POST"])
+@token_required
+def update_cover(user_id, book_id):
+    book = Book.query.get_or_404(
+        book_id, description=(f"Book with id: {book_id} not found")
+    )
+    cover_name_with_id = "cover" + str(book.id)
+    cover_name_with_extension = upload_file_s3_bucket(cover_name_with_id)
+
+    if cover_name_with_extension is not None:
+        book.cover_name = cover_name_with_extension
+        db.session.commit()
+
+    return jsonify({"success": "True"})
 
 
 @books_bp.route("/books/<int:book_id>", methods=["DELETE"])

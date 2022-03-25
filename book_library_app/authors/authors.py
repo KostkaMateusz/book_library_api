@@ -21,7 +21,6 @@ def get_authors():
     query = apply_order(Author, query)
     query = apply_filter(Author, query)
     items, pagination = get_pagination(query, "authors.get_authors")
-
     authors = AuthorSchema(**schema_args).dump(items)
 
     return jsonify(

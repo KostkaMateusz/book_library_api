@@ -3,11 +3,12 @@ import smtplib
 import os
 import re
 import jwt
+import boto3
 from functools import wraps
 from typing import Tuple
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from flask import request, url_for, current_app, abort, jsonify, Response, Flask
+from flask import request, url_for, current_app, abort
 from flask_sqlalchemy import DefaultMeta, BaseQuery
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.expression import BinaryExpression
@@ -15,15 +16,14 @@ from book_library_app.models import Author, Votes, Book
 from book_library_app import db
 from werkzeug.exceptions import UnsupportedMediaType
 from werkzeug.utils import secure_filename
-import boto3
 from botocore.client import Config
-
+from botocore.exceptions import ClientError
 
 COMPARISION_OPERATORS_RE = re.compile(r"(.*)\[(gte|gt|lte|lt)\]")
 
 
 def calculate_stats(books_id: list[int]) -> None:
-    """Calculate book score and number of votes based on book id and data in Votes table"""
+    """Calculate book score and number of votes based on book id and data in Votes"""
     for book_id in books_id:
         votes_list = Votes.query.filter(Votes.book_id == book_id).all()
         book = Book.query.get_or_404(
@@ -103,7 +103,7 @@ def get_schema_args(model: DefaultMeta) -> dict:
     schema_args = {"many": True}
     fields = request.args.get("fields")
 
-    # here we dynamicly build arguments to a only parameter in Schema object in form of dict
+    # here we dynamicly build arguments to a only parameter in Schema object
     if fields is not None:
         schema_args["only"] = [
             field for field in fields.split(",") if field in model.__table__.columns
@@ -150,7 +150,7 @@ def apply_filter(model: DefaultMeta, query: BaseQuery) -> BaseQuery:
     """Show entry which meet requirments from request"""
     for param, value in request.args.items():
 
-        # all parameters that are not in fields, sort,page and limit are filtering arguments
+        # all parameters that are not in fields, sort,page and limit are filtering args
         if param not in {"fields", "sort", "page", "limit"}:
             # defoult operator if none argument passed
             operator = "=="
@@ -235,13 +235,65 @@ def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-s3 = boto3.client(
-    "s3",
-    region_name="eu-central-1",
-    aws_access_key_id=os.environ.get("S3_KEY"),
-    aws_secret_access_key=os.environ.get("S3_SECRET"),
-    config=Config(signature_version=os.environ.get("signature_version")),
-)
+def get_boto3_client():
+    s3 = boto3.client(
+        "s3",
+        region_name="eu-central-1",
+        aws_access_key_id=os.environ.get("S3_KEY"),
+        aws_secret_access_key=os.environ.get("S3_SECRET"),
+        config=Config(signature_version=os.environ.get("signature_version")),
+    )
+    return s3
 
 
-bucket_name = os.environ.get("S3_BUCKET")
+def upload_file_s3_bucket(file_name: str):
+    if "file" not in request.files:
+        abort(400, description="No file part in the request")
+
+    file = request.files.get("file")
+    bucket_name = os.environ.get("S3_BUCKET")
+
+    if file and allowed_file(file.filename):
+        secure_filename(file.filename)
+        file.filename = file_name + "." + file.filename.rsplit(".", 1)[1].lower()
+
+        try:
+            get_boto3_client().put_object(
+                Body=file, Bucket=bucket_name, Key=file.filename
+            )
+            success = True
+        except ClientError as e:
+            success = False
+            abort(404, description=("Failed to upload a file"))
+
+    else:
+        success = False
+        abort(415, description=("File type is not allowed"))
+
+    return file.filename
+
+
+def get_book_cover_link(cover_name: str):
+    """Generate a presigned URL to share an S3 object
+
+    :param bucket_name: string
+    :param cover_name: string
+    :param expiration: Time in seconds for the presigned URL to remain valid
+    :return: Presigned URL as string. If error, returns None.
+    """
+    expiration = 300
+    bucket_name = os.environ.get("S3_BUCKET")
+    # Generate a presigned URL for the S3 object
+
+    try:
+        book_cover_link = get_boto3_client().generate_presigned_url(
+            "get_object",
+            Params={"Bucket": bucket_name, "Key": cover_name},
+            ExpiresIn=expiration,
+        )
+    except ClientError as e:
+        print(e)
+        abort(404, description=(f"Cover {cover_name} not found"))
+
+    # The response contains the presigned URL
+    return book_cover_link
