@@ -2,18 +2,23 @@ name: Build and Deploy Code
 
 on: [push, pull_request]
 
+env:
+  User: postgres
+  Password: password123
+  Port: 5432
+  Database: book_library
+  HOST: postgres
+  SECRET_KEY: SOMERANDOMSTRING
+  email_password: example
+  sender_email: dev_email@example.com
+  S3_BUCKET: booklibraryimagebucket
+  S3_KEY: SOMEKEY
+  S3_SECRET: SOMESECRETKEY
+  S3_LOCATION: http://booklibraryimagebucket.s3.amazonaws.com/
+  signature_version: s3v4
+
 jobs:
   build:
-    environment:
-      name: dev
-    env:
-      User: postgres
-      Password: password123
-      Port: 5432
-      Database: book_library
-      HOST: postgres
-      SECRET_KEY: SOMERANDOMSTRING
-
     services:
       postgres:
         image: postgres
