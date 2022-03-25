@@ -5,7 +5,8 @@
     "number_of_pages": 112,
     "description": "Mr Jones of Manor Farm is so lazy and drunken that one day he forgets to feed his livestock. The ensuing rebellion under the leadership of the pigs Napoleon and Snowball leads to the animals taking over the farm. Vowing to eliminate the terrible inequities of the farmyard, the renamed Animal Farm is organised to benefit all who walk on four legs.",
     "author_id": 1,
-    "book_category": "social"
+    "book_category": "social",
+    "cover_name": "cover1.jpg"
   },
   {
     "title": "1984",
@@ -13,7 +14,8 @@
     "number_of_pages": 325,
     "description": "One of the most celebrated classics of the twentieth century, Orwell's cautionary tale of a man trapped under the gaze of an authoritarian state feels more relevant now than ever before.",
     "author_id": 1,
-    "book_category": "social"
+    "book_category": "social",
+    "cover_name": "cover2.jpg"
   },
   {
     "title": "Old Man and the Sea",
@@ -21,7 +23,8 @@
     "number_of_pages": 96,
     "description": "One of a series of top-quality fiction for schools, this is Hemingway's Nobel Prize-winning story of a Cuban fisherman's struggle with a great fish - a struggle between man and the elements, the hunter and the hunted.",
     "author_id": 2,
-    "book_category": "social"
+    "book_category": "social",
+    "cover_name": "cover3.jpg"
   },
   {
     "title": "Matilda: Be Outrageous",
@@ -29,7 +32,8 @@
     "number_of_pages": 32,
     "description": "Am I a phenomenon? It is quite possible that you are.\nReimagine Dahl's beloved classic in this gorgeous, hand-lettered gift book perfect for Matilda fans of all ages Featuring the best and brightest lines from Roald Dahl's magical story, this book displays the iconic quotes in whimsical and artful calligraphy, while reminding readers to be, first and foremost, outrageous.",
     "author_id": 3,
-    "book_category": "social"
+    "book_category": "social",
+    "cover_name": "cover4.jpg"
   },
   {
     "title": "Timequake",
@@ -37,7 +41,8 @@
     "number_of_pages": 240,
     "description": "Addresses memory, suicide, the Great Depression, the loss of American eloquence, and the obsolescent thrill of reading books.",
     "author_id": 4,
-    "book_category": "social"
+    "book_category": "social",
+    "cover_name": "cover5.jpg"
   },
   {
     "title": "It",
@@ -45,7 +50,8 @@
     "number_of_pages": 1392,
     "description": "Derry, Maine is just an ordinary town : familiar, well- ordered for the most part, a good place to live. It is a group of children who see - and feel - what makes Derry so horribly different. In the storm drains, in the sewers, IT lurks, taking on the shape of every nightmare, each one's deepest dread. Sometimes IT appears as an evil clown named Pennywise and sometimes IT reaches up, seizing, tearing, killing... Time passes and the children grow up, move away and forget. Until they are called back, once more to confront IT as IT stirs and coils in the sullen depths of their memories, emerging again to make their past nightmares a terrible present reality.",
     "author_id": 5,
-    "book_category": "horror"
+    "book_category": "horror",
+    "cover_name": "cover6.jpg"
   },
   {
     "title": "Hunger Games",
@@ -53,7 +59,8 @@
     "number_of_pages": 448,
     "description": "Set in a dark vision of the near future, a terrifying reality TV show is taking place. Twelve boys and twelve girls are forced to appear in a live event called The Hunger Games. There is only one rule: kill or be killed.",
     "author_id": 6,
-    "book_category": "criminal "
+    "book_category": "criminal ",
+    "cover_name": "cover7.jpg"
   },
   {
     "title": "Catching Fire",
@@ -61,7 +68,8 @@
     "number_of_pages": 448,
     "description": "After winning the brutal Hunger Games, Katniss and Peeta return to their district, hoping for a peaceful future. But their victory has caused rebellion to break out ... and the Capitol has decided that someone must pay. As Katniss and Peeta are forced to visit the districts on the Capitol's Victory Tour, the stakes are higher than ever...",
     "author_id": 6,
-    "book_category": "Drama"
+    "book_category": "Drama",
+    "cover_name": "cover8.jpg"
   },
   {
     "title": "Mockingjay",
@@ -69,7 +77,8 @@
     "number_of_pages": 464,
     "description": "The final book in the ground-breaking HUNGER GAMES trilogy. Katniss Everdeen has survived the Hunger Games twice. The Capitol is angry and wants revenge. Who do they think should pay for the unrest? Katniss. And President Snow has made it clear that no one else is safe either. Not Katniss's family, not her friends, not the people of District 12.",
     "author_id": 6,
-    "book_category": "comedy"
+    "book_category": "comedy",
+    "cover_name": "cover9.jpg"
   },
   {
     "title": "Origin",
@@ -77,7 +86,8 @@
     "number_of_pages": 656,
     "description": "Robert Langdon, Harvard professor of symbology, arrives at the ultramodern Guggenheim Museum Bilbao to attend the unveiling of a discovery that \"will change the face of science forever.\" The evening's host is Edmond Kirsch, a forty-year-old billionaire and futurist, and one of Langdon's first students.\nBut the meticulously orchestrated evening suddenly erupts into chaos, and Kirsch's precious discovery teeters on the brink of being lost forever. Facing an imminent threat, Langdon is forced to flee. With him is Ambra Vidal, the elegant museum director who worked with Kirsch. They travel to Barcelona on a perilous quest to locate a cryptic password that will unlock Kirsch's secret.",
     "author_id": 7,
-    "book_category": "social"
+    "book_category": "social",
+    "cover_name": "cover10.jpg"
   },
   {
     "title": "Inferno",
@@ -85,7 +95,8 @@
     "number_of_pages": 624,
     "description": "Harvard professor of symbology Robert Langdon awakens in an Italian hospital, disoriented and with no recollection of the past thirty-six hours, including the origin of the macabre object hidden in his belongings. With a relentless female assassin trailing them through Florence, he and his resourceful doctor, Sienna Brooks, are forced to flee. Embarking on a harrowing journey, they must unravel a series of codes, which are the work of a brilliant scientist whose obsession with the end of the world is matched only by his passion for one of the most influential masterpieces ever written, Dante Alighieri's The Inferno.\nDan Brown has raised the bar yet again, combining classical Italian art, history, and literature with cutting-edge science in this sumptuously entertaining thriller.",
     "author_id": 7,
-    "book_category": "war"
+    "book_category": "war",
+    "cover_name": "cover11.jpg"
   },
   {
     "title": "Lovely Bones",
@@ -93,7 +104,8 @@
     "number_of_pages": 336,
     "description": "The critically acclaimed international bestseller -- 'Moving and compelling ... It will put an imperceptible but stealthily insistent hold on you.' Maggie O'Farrell, Sunday Telegrap",
     "author_id": 8,
-    "book_category": "culture"
+    "book_category": "culture",
+    "cover_name": "cover12.jpg"
   },
   {
     "title": "Last Wish",
@@ -101,7 +113,8 @@
     "number_of_pages": 288,
     "description": "TV tie-in edition of the New York Times bestseller that introduces Geralt the Witcher, who holds the line against the monsters plaguing humanity in this first book in the award-winning Witcher series.",
     "author_id": 9,
-    "book_category": "comedy"
+    "book_category": "comedy",
+    "cover_name": "cover13.jpg"
   },
   {
     "title": "Flights",
@@ -109,6 +122,7 @@
     "number_of_pages": 400,
     "description": "DESCRIPTION\nFLIGHTS, which was awarded Poland's biggest literary prize in 2008, is a novel about travel in the twenty-first century and human anatomy. Olga Tokarczuk perfectly intertwines travel narratives and reflections on travel with observations on the body and on life and death",
     "author_id": 10,
-    "book_category": "drama"
+    "book_category": "drama",
+    "cover_name": "cover14.jpg"
   }
 ]

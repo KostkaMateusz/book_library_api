@@ -1,4 +1,5 @@
 from flask import jsonify, abort
+from botocore.exceptions import ClientError
 from book_library_app import db
 from book_library_app.utils import validate_json_content_type
 from book_library_app.models import Book, BookSchema, book_schema, Author
@@ -11,9 +12,37 @@ from book_library_app.utils import (
     apply_filter,
     get_pagination,
     token_required,
+    s3,
+    bucket_name,
 )
 
 
+def get_book_cover_link(cover_name: str):
+    """Generate a presigned URL to share an S3 object
+
+    :param bucket_name: string
+    :param cover_name: string
+    :param expiration: Time in seconds for the presigned URL to remain valid
+    :return: Presigned URL as string. If error, returns None.
+    """
+    expiration = 300
+    # Generate a presigned URL for the S3 object
+
+    try:
+        book_cover_link = s3.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": bucket_name, "Key": cover_name},
+            ExpiresIn=expiration,
+        )
+    except ClientError as e:
+        print(e)
+        abort(404, description=(f"Cover {cover_name} not found"))
+
+    # The response contains the presigned URL
+    return book_cover_link
+
+
+# add defoult cover
 @books_bp.route("/books", methods=["GET"])
 def get_books():
     """Query table Authors and returns data as json"""
@@ -24,7 +53,12 @@ def get_books():
 
     # specify what fields are to be serialized Schema(only=[fields])
     schema_args = get_schema_args(Book)
+
     books = BookSchema(**schema_args).dump(items)
+
+    if "only" in schema_args.keys() and "cover_name" in schema_args["only"]:
+        for book in books:
+            book["cover_name"] = get_book_cover_link(book["cover_name"])
 
     return jsonify(
         {
@@ -43,10 +77,12 @@ def get_book(book_id: int):
     )
 
     calculate_stats([book_id])
+    book_json = book_schema.dump(book)
+    book_json["cover_name"] = get_book_cover_link(book_json["cover_name"])
 
     return jsonify(
         {
-            "data": book_schema.dump(book),
+            "data": book_json,
         }
     )
 
@@ -109,7 +145,7 @@ def get_all_author_books(author_id: int):
 @token_required
 @validate_json_content_type
 @use_args(BookSchema(exclude=["author_id"]), error_status_code=400)
-def create_book(author_id: str, args: dict):
+def create_book(user_id: int, args: dict, author_id: str):
     Author.query.get_or_404(author_id, description=f"Author with {author_id} not found")
     if Book.query.filter(Book.isbn == args["isbn"]).first():
         abort(409, description=(f'Book with ISBN { args["isbn"] } already exists'))
