@@ -56,7 +56,7 @@ def get_books():
 
     books = BookSchema(**schema_args).dump(items)
 
-    if "cover_name" in schema_args["only"]:
+    if "only" in schema_args.keys() and "cover_name" in schema_args["only"]:
         for book in books:
             book["cover_name"] = get_book_cover_link(book["cover_name"])
 

@@ -16,7 +16,8 @@ services:
       - HOST=postgres
       - SECRET_KEY=SOMERANDOMSTRING
     command: >
-      sh -c "flask db upgrade &&
+      sh -c "flask db migrate
+            flask db upgrade &&
             flask db-manage add-data &&
             flask run --host 0.0.0.0 --port 8000"
     depends_on:

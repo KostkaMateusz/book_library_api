@@ -243,4 +243,5 @@ s3 = boto3.client(
     config=Config(signature_version=os.environ.get("signature_version")),
 )
 
+
 bucket_name = os.environ.get("S3_BUCKET")
